@@ -60,4 +60,7 @@ h1{
 .congo{
     color: #13293D;
     display:hide;
+    text-align: center;
+    font-size: 40px;
+    background-color: #eff6fd;
 }
