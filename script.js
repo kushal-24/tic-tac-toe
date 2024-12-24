@@ -1,103 +1,99 @@
-let boxes = document.querySelectorAll(".box");
-let reset = document.querySelector(".reset");
-let congo = document.querySelector(".congo");
-let newgame = document.querySelector(".refresh");
+const boxes = document.querySelectorAll(".box");
+const reset = document.querySelector(".reset");
+const congo = document.querySelector(".congo");
+const newGame = document.querySelector(".refresh");
 let sign = "cross";
 
 const winPatterns = [
     [0, 1, 2],
-    [0, 3, 6],
-    [0, 4, 8],
-    [1, 4, 7],
-    [2, 5, 8],
-    [2, 4, 6],
     [3, 4, 5],
     [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
 ];
 
-boxes.forEach((boxes) => {
-    boxes.addEventListener("click", () => {
-        console.log("The box was clicked")
+// Event listener for each box
+boxes.forEach((box) => {
+    box.addEventListener("click", () => {
         if (sign === "cross") {
             sign = "zero";
-            boxes.innerText = "X";
-            boxes.style.fontSize = "70px";
-            boxes.style.color = "#006494"
-        }
-        else {
+            box.innerText = "X";
+            box.classList.add("cross");
+        } else {
             sign = "cross";
-            boxes.innerText = "0";
-            boxes.style.fontSize = "70px";
-            boxes.style.color = "#E8F1F2";
-            boxes.style.backgroundColor = "#006494";
-
+            box.innerText = "O";
+            box.classList.add("zero");
         }
-        boxes.disabled = true;
-        checkwinner();
-    })
+        box.disabled = true;
+        checkWinner();
+    });
 });
-const winnershow = (winner) => {
-    congo.style.remove("hide");
-    disablebutton();
-}
 
+// Display winner
+const showWinner = (winner) => {
+    congo.innerHTML = `<h3>Congratulations! Winner is ${winner}</h3>`;
+    congo.style.display = "block";
+    disableBoxes();
+};
 
-const disablebutton = () => {
-    boxes.forEach((boxes) => {
-        boxes.disabled = true;
-        boxes.style.backgroundColor="white";
-
+// Disable all boxes after a win
+const disableBoxes = () => {
+    boxes.forEach((box) => {
+        box.disabled = true;
     });
-}
-const enablebutton = () => {
-    boxes.forEach((boxes) => {
-        boxes.disabled = false;
-    });
-}
+};
 
-//winner
-const checkwinner = () => {//patern naam ka ek array ban raha hai, go refer "arraydisplay.js" file
+// Enable all boxes for a new game
+const enableBoxes = () => {
+    boxes.forEach((box) => {
+        box.disabled = false;
+        box.innerText = "";
+        box.classList.remove("cross", "zero");
+    });
+};
+
+// Check for winner
+const checkWinner = () => {
     for (let pattern of winPatterns) {
-        let pos1Val = boxes[pattern[0]].innerText;
-        let pos2Val = boxes[pattern[1]].innerText;
-        let pos3Val = boxes[pattern[2]].innerText;
+        const [a, b, c] = pattern;
+        const val1 = boxes[a].innerText;
+        const val2 = boxes[b].innerText;
+        const val3 = boxes[c].innerText;
 
-        if (pos1Val != "" && pos2Val != "" && pos3Val != "") {
-            if (pos1Val === pos2Val && pos1Val === pos3Val) {
-                let ann = congo.innerHTML = `<h3>Congratulations, Winner is ${pos1Val}</h3>`;
-                console.log(`Winner is ${pos1Val}`);
-                winnershow(pos2Val);
-            }
+        if (val1 !== "" && val1 === val2 && val1 === val3) {
+            boxes[a].style.backgroundColor = "lightgreen";
+            boxes[b].style.backgroundColor = "lightgreen";
+            boxes[c].style.backgroundColor = "lightgreen";
+            showWinner(val1);
+            return;
         }
+    }
+
+    // Check for a draw
+    const isDraw = [...boxes].every((box) => box.innerText !== "");
+    if (isDraw) {
+        congo.innerHTML = `<h3>It's a Draw!</h3>`;
+        congo.style.display = "block";
     }
 };
 
-
-
-//reset button
-const resetbtn = () => {
-    enablebutton();
-    sign = "cross";
-    for (box of boxes) {
-        box.innerText = "";
-    }
-    congo.innerText = "";
-}
+// Reset the game
 reset.addEventListener("click", () => {
-    resetbtn();
-})
-
-
-//newgame button
-const newgamebtn = () => {
-    enablebutton();
+    enableBoxes();
     sign = "cross";
-    for (box of boxes) {
-        box.innerText = "";
-    }
-    congo.innerText = "";
-}
-newgame.addEventListener("click", () => {
-    newgamebtn();
-})
+    congo.innerHTML = "";
+    congo.style.display = "none";
+    boxes.forEach((box) => (box.style.backgroundColor = ""));
+});
 
+// New game button
+newGame.addEventListener("click", () => {
+    enableBoxes();
+    sign = "cross";
+    congo.innerHTML = "";
+    congo.style.display = "none";
+    boxes.forEach((box) => (box.style.backgroundColor = ""));
+});
